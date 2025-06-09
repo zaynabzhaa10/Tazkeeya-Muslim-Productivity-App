@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/prayerTimesFragment"
+        android:name="com.example.finalproject.ui.home.PrayerTimesFragment"
+        android:label="PrayerTimesFragment"
+        tools:layout="@layout/fragment_prayer_times" />
+    <fragment
+        android:id="@+id/quranFragment"
+        android:name="com.example.finalproject.ui.home.QuranFragment"
+        android:label="QuranFragment"
+        tools:layout="@layout/fragment_quran">
+        <action
+            android:id="@+id/action_quranFragment_to_addReadLogFragment"
+            app:destination="@id/addReadLogFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/murottalFragment"
+        android:name="com.example.finalproject.ui.home.MurottalFragment"
+        android:label="MurottalFragment"
+        tools:layout="@layout/fragment_murottal" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.finalproject.ui.settings.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/addReadLogFragment"
+        android:name="com.example.finalproject.ui.readlog.AddReadLogFragment"
+        android:label="AddReadLogFragment"
+        tools:layout="@layout/fragment_add_read_log" />
+
+    <fragment
+        android:id="@+id/readLogListFragment"
+        android:name="com.example.finalproject.ui.readlog.ReadLogListFragment"
+        android:label="ReadLogListFragment"
+        tools:layout="@layout/fragment_read_log_list" />
+
+</navigation>

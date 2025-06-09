@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.home.MurottalFragment">
+
+    <TextView
+        android:id="@+id/tvMurottalTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tazkeeya Murottal"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
+
+    <View
+        android:layout_width="60dp"
+        android:layout_height="3dp"
+        android:layout_gravity="center_horizontal"
+        android:background="?attr/colorPrimary"
+        android:layout_marginBottom="16dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBarMurottal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMurottalSurahs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:listitem="@layout/item_surah"/> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_marginTop="16dp">
+
+    <ImageView
+        android:id="@+id/btnPreviousMurottal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_previous"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Sebelumnya"/>
+
+    <ImageView
+        android:id="@+id/btnPlayPauseMurottal"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_play_arrow"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Putar/Jeda"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <ImageView
+        android:id="@+id/btnNextMurottal"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_next"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Selanjutnya"/>
+</LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCurrentPlaying"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Tidak ada murottal yang diputar"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/btnRefreshMurottal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh Data"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
+
+</LinearLayout>

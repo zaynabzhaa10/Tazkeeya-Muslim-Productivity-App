@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/prayerTimesFragment"
+        android:icon="@drawable/ic_prayer_time"
+        android:title="Sholat" />
+
+    <item
+        android:id="@+id/quranFragment"
+        android:icon="@drawable/ic_quran"
+        android:title="Al-Qur'an" />
+
+    <item
+        android:id="@+id/murottalFragment"
+        android:icon="@drawable/ic_headphone"
+        android:title="Murottal" />
+
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="Pengaturan" />
+
+</menu>

@@ -1,0 +1,96 @@
+plugins {
+    alias(libs.plugins.android.application)
+    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.android'
+}
+
+apply plugin: 'androidx.navigation.safeargs'
+
+android {
+    namespace 'com.example.finalproject'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.example.finalproject"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // --- TAMBAHKAN ATAU SESUAIKAN BLOK kotlinOptions INI ---
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    // --- AKHIR BLOK kotlinOptions ---
+    buildFeatures {
+        viewBinding true
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    implementation libs.appcompat
+//    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+    implementation libs.recyclerview
+
+    implementation libs.material.v1110
+    implementation libs.material3 // hanya untuk Jetpack Compose
+
+    // Core Android KTX (Kotlin Extensions)
+    implementation libs.appcompat.v161
+    implementation libs.constraintlayout.v214
+    kapt libs.room.compiler.v261
+
+    implementation libs.core
+    implementation libs.core.ktx.v1150
+    // Navigation Component
+    implementation libs.navigation.fragment.ktx // Untuk Fragment
+    implementation libs.navigation.ui.ktx       // Untuk UI seperti BottomNavigationView
+
+    // Retrofit (Networking)
+    implementation libs.retrofit
+    implementation libs.converter.gson // Converter JSON (Gson)
+    implementation libs.logging.interceptor // Untuk logging request/response API
+
+    // Room Database (Local Data Persistence)
+    implementation libs.room.runtime
+    implementation libs.room.runtime.v261
+    implementation libs.room.ktx // Dukungan Kotlin Coroutines untuk Room
+
+    // Lifecycle Components (ViewModel, LiveData)
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.lifecycle.livedata.ktx
+
+    // Kotlin Coroutines (Untuk operasi asynchronous yang modern dan aman)
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
+
+    // Testing (Optional, tapi disarankan)
+    androidTestImplementation libs.junit.v115
+    androidTestImplementation libs.espresso.core.v351
+}

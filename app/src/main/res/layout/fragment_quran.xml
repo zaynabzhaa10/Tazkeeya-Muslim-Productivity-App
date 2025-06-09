@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
+    tools:context=".ui.home.QuranFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="?attr/actionBarSize">
+
+        <TextView
+            android:id="@+id/tvQuranTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tazkeeya Qur'an"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:gravity="center"
+            android:layout_marginBottom="12dp" />
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center_horizontal"
+            android:background="?attr/colorPrimary"
+            android:layout_marginBottom="16dp" />
+
+        <SearchView
+            android:id="@+id/searchViewSurah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Cari Surah (nomor/nama)"
+            android:iconifiedByDefault="false"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/search_bg" />
+
+        <ProgressBar
+            android:id="@+id/progressBarQuran"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:indeterminateTint="?attr/colorPrimary" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSurahs"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_surah" />
+
+        <ImageView
+            android:id="@+id/btnRefreshQuran"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="Refresh Data Al-Qur'an"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:src="@drawable/ic_refresh" />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Tambah Catatan Bacaan"
+        android:src="@drawable/ic_add"
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorSecondary" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnViewReadLogs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="100dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_crown"
+        android:contentDescription="Lihat Target dan Riwayat Bacaan"
+        app:tint="?attr/colorPrimaryVariant" />
+
+</FrameLayout>
