@@ -1,52 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="32dp"
-    android:background="@color/purple_200"
+    android:fillViewport="true"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:src="@drawable/logo2"
-        android:contentDescription="@string/app_name"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvWelcomeMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Biar sibuk, tetap sujud. \nBiar hectic, tetap husyuk."
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="?android:attr/textColorPrimary"
-        android:layout_marginBottom="16dp" />
+        <!-- Background Image -->
+        <ImageView
+            android:id="@+id/ivBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/tazkeeya"
+            android:scaleType="centerCrop"
+            android:alpha="0.50"
+            android:contentDescription="Background Tazkeeya" />
 
-    <TextView
-        android:id="@+id/tvQuranQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Udah baca Qur'an hari ini?"
-        android:textSize="20sp"
-        android:textColor="?android:attr/textColorSecondary"
-        android:layout_marginBottom="32dp" />
+        <!-- Gradient Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_overlay" />
 
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ayo Mulai"
-        android:textSize="18sp"
-        android:paddingStart="32dp"
-        android:paddingEnd="32dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        app:cornerRadius="24dp"/>
+        <!-- Main Content Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp">
 
-</LinearLayout>
+            <!-- Logo Container with Shadow -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="125dp"
+                app:cardElevation="16dp">
+
+                <ImageView
+                    android:id="@+id/ivLogo"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:contentDescription="@string/app_name"
+                    android:padding="20dp"
+                    android:src="@drawable/logo2" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Welcome Message Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:alpha="0.95"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/tvWelcomeMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="4dp"
+                        android:text="Biar sibuk, tetap sujud.\nBiar hectic, tetap husyuk."
+                        android:textColor="#2C3E50"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvQuranQuestion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Dan Aku tidak menciptakan jin dan manusia melainkan supaya mereka menyembah-Ku.\n\n(QS. Az-Zariyat: 56)"
+                        android:textColor="#7F8C8D"
+                        android:textSize="15sp"
+                        android:textStyle="italic" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Start Button with Gradient -->
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/button_gradient"
+                android:elevation="8dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:stateListAnimator="@null"
+                android:text="🚀 Ayo Mulai"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- Decorative Elements -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#BDC3C7" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨"
+                    android:textSize="24sp" />
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="16dp"
+                    android:background="#BDC3C7" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/tazkeeya"
+            android:alpha="0.2"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="48dp"
+            android:contentDescription="Decorative element" />
+
+    </RelativeLayout>
+
+</ScrollView>

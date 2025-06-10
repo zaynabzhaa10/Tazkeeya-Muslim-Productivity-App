@@ -167,7 +167,7 @@ public class PrayerTimesFragment extends Fragment {
 
         if (lastKnownLocation != null) {
             Log.d("PrayerTimesFragment", "Lokasi terakhir diketahui: " + lastKnownLocation.getLatitude() + ", " + lastKnownLocation.getLongitude());
-            binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia (Menggunakan lokasi terakhir)");
+            binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia");
             fetchPrayerTimes(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         } else {
             locationListener = new LocationListener() {
