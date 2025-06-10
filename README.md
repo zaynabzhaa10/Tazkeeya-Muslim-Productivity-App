@@ -37,12 +37,14 @@ Berikut adalah beberapa tampilan (screenshot) utama dari aplikasi Tazkeeya untuk
 
 ### 1. Tampilan Utama (Landing Page)
 Ini adalah halaman pertama yang akan dilihat pengguna saat membuka aplikasi.
+
 <img src="https://github.com/user-attachments/assets/6feb6146-4653-451c-b01a-7c6a4f632aff" alt="Tampilan Utama Aplikasi" width="300">
 
 ---
 
 ### 2. Tampilan Jadwal Sholat
 Fitur ini menampilkan jadwal sholat harian beserta lokasi dan hitungan mundur ke waktu sholat berikutnya.
+
 <img src="https://github.com/user-attachments/assets/bd3f95a6-ca20-49e7-80f7-fefa6707a291" alt="Menu Jadwal Sholat" width="300">
 
 ---
@@ -52,26 +54,31 @@ Bagian ini menampilkan fitur Al-Qur'an dengan berbagai sub-fitur:
 
 #### a. Daftar Semua Surah
 Pengguna dapat melihat daftar lengkap surah dalam Al-Qur'an.
+
 <img src="https://github.com/user-attachments/assets/f07e1756-e59e-49e2-adca-44fb6e3de32b" alt="Tampilan Semua Surah Al-Qur'an" width="300">
 
 #### b. Tampilan Target dan Riwayat Tilawah
 Fitur ini membantu pengguna memantau progres tilawah harian mereka.
+
 <img src="https://github.com/user-attachments/assets/1a1f5b50-8ca5-48ea-9aaf-02efe8392e0b" alt="Tampilan Target dan Riwayat Tilawah" width="300">
 
 #### c. Tampilan Form Tilawah Harian
 Pengguna dapat memasukkan jumlah ayat yang telah dibaca untuk melacak target harian.
+
 <img src="https://github.com/user-attachments/assets/25c2ead9-bf08-4a8b-b6e5-d6731bfdff23" alt="Tampilan Form Tilawah Harian" width="300">
 
 ---
 
 ### 4. Tampilan Menu Murottal
 Pengguna dapat mendengarkan lantunan ayat suci Al-Qur'an.
+
 <img src="https://github.com/user-attachments/assets/9106e824-22d0-4661-809b-3b0bab3eecfc" alt="Menu Murottal" width="300">
 
 ---
 
 ### 5. Tampilan Menu Pengaturan
 Pengguna dapat menyesuaikan tema aplikasi (gelap/terang) sesuai preferensi visual.
+
 <img src="https://github.com/user-attachments/assets/00793d5f-deaa-4f21-a294-e5ab735d755b" alt="Menu Pengaturan" width="300">
 
 ---
