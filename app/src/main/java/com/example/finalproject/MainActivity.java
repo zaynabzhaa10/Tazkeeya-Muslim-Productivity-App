@@ -1,5 +1,7 @@
 package com.example.finalproject;
 
+import static androidx.constraintlayout.motion.widget.Debug.getLocation;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.finalproject.databinding.ActivityMainBinding;
@@ -43,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         // --- Akhir Permintaan Izin ---
+
+        // Cek dan minta permission lokasi
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+        } else {
+            // Panggil fungsi ambil lokasi di sini
+            getLocation();
+        }
 
         // MainActivity akan selalu menampilkan landing page
         binding = ActivityMainBinding.inflate(getLayoutInflater());

@@ -51,15 +51,16 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/ic_calendar"/>
 
                 <TextView
                     android:id="@+id/tvDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jumat, 7 Juni 2025"
+                    android:text="Jumat, 7 Juni 2025 \n10 Dzulhijjah 1446 H"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/teal_700"
@@ -75,8 +76,46 @@
                 android:text="📍 Makassar, Indonesia"
                 android:textSize="16sp"
                 android:textColor="@color/teal_700"/>
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardElevation="6dp"
+            app:cardCornerRadius="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDigitalClock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorSecondary"
+                    android:text="--:--"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvCountdownToNextPrayer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="(Memuat...)"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="24dp"/>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
 
     <ProgressBar
         android:id="@+id/progressBarPrayer"

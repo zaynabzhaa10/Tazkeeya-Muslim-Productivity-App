@@ -16,9 +16,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View; // Pastikan ini diimpor
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast; // Pastikan ini diimpor
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,13 +40,14 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import android.provider.Settings;
 import android.app.AlertDialog;
 import android.net.Uri;
+import java.util.TimeZone;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PrayerTimesFragment extends Fragment {
 
@@ -56,6 +57,12 @@ public class PrayerTimesFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private ExecutorService executorService;
     private Handler mainHandler;
+
+    private Handler clockHandler;
+    private Runnable clockRunnable;
+    // --- PASTIKAN DEKLARASI INI ADA PERSIS DI SINI SEBAGAI ANGGOTA KELAS ---
+    private PrayerTimesResponse.PrayerTimesData currentPrayerTimesData;
+    // --- AKHIR PASTIKAN ---
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -71,25 +78,55 @@ public class PrayerTimesFragment extends Fragment {
         executorService = Executors.newSingleThreadExecutor();
         mainHandler = new Handler(Looper.getMainLooper());
 
+        clockHandler = new Handler(Looper.getMainLooper());
+        clockRunnable = new Runnable() {
+            @Override
+            public void run() {
+                updateDigitalClockAndCountdown();
+                clockHandler.postDelayed(this, 1000); // Update setiap 1 detik
+            }
+        };
+
         binding.btnRefreshPrayer.setOnClickListener(v -> requestLocationAndFetchPrayerTimes());
 
+        clockHandler.post(clockRunnable); // Mulai update jam saat fragment dibuat.
         checkLocationPermissionAndFetchPrayerTimes();
     }
 
-    private void checkLocationPermissionAndFetchPrayerTimes() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+    private void requestLocationAndFetchPrayerTimes() {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (clockHandler != null && clockRunnable != null) {
+            clockHandler.post(clockRunnable);
+        }
+        // KOREKSI: Panggil updateDigitalClockAndCountdown untuk memastikan tampilan terbaru
+        // terutama setelah kembali dari Activity lain (misal Settings)
+        if (currentPrayerTimesData != null) {
+            updateDigitalClockAndCountdown();
         } else {
-            requestLocationAndFetchPrayerTimes();
+            // Jika currentPrayerTimesData null, coba fetch ulang data sholat
+            // agar updateDigitalClockAndCountdown memiliki data saat resume
+            checkLocationPermissionAndFetchPrayerTimes();
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void requestLocationAndFetchPrayerTimes() {
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (clockHandler != null && clockRunnable != null) {
+            clockHandler.removeCallbacks(clockRunnable);
+        }
+    }
+
+    private void checkLocationPermissionAndFetchPrayerTimes() {
         binding.progressBarPrayer.setVisibility(View.VISIBLE);
         binding.prayerTimesContainer.setVisibility(View.GONE);
         binding.btnRefreshPrayer.setVisibility(View.GONE);
         binding.tvLocation.setText("Mendapatkan lokasi...");
+        binding.tvCountdownToNextPrayer.setText("Memuat waktu sholat...");
 
         locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
         if (locationManager == null) {
@@ -120,7 +157,7 @@ public class PrayerTimesFragment extends Fragment {
                 lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
         } catch (SecurityException e) {
-            Log.e("PrayerTimesFragment", "Izin lokasi tidak diberikan untuk getLastKnownLocation", e);
+            Log.e("PrayerTimesFragment", "Izin lokasi tidak diberikan", e);
             showError("Aplikasi tidak memiliki izin lokasi.");
             binding.tvLocation.setText("Gagal mendapatkan lokasi: Izin ditolak.");
             binding.progressBarPrayer.setVisibility(View.GONE);
@@ -130,7 +167,7 @@ public class PrayerTimesFragment extends Fragment {
 
         if (lastKnownLocation != null) {
             Log.d("PrayerTimesFragment", "Lokasi terakhir diketahui: " + lastKnownLocation.getLatitude() + ", " + lastKnownLocation.getLongitude());
-            binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia");
+            binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia (Menggunakan lokasi terakhir)");
             fetchPrayerTimes(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         } else {
             locationListener = new LocationListener() {
@@ -189,8 +226,9 @@ public class PrayerTimesFragment extends Fragment {
 
     private void fetchPrayerTimes(double latitude, double longitude) {
         ApiService apiService = RetrofitClient.getAladhanClient().create(ApiService.class);
-        long timestamp = System.currentTimeMillis() / 1000L;
-        Call<PrayerTimesResponse> call = apiService.getPrayerTimesByCoordinates(timestamp, latitude, longitude, 5);
+        // KOREKSI: Menggunakan endpoint 'timingsByCity' dengan city/country, bukan timestamp
+        // Ini lebih sederhana untuk demo lokasi tetap
+        Call<PrayerTimesResponse> call = apiService.getPrayerTimesByCity("Makassar", "Indonesia", 5);
 
         executorService.execute(() -> {
             call.enqueue(new Callback<PrayerTimesResponse>() {
@@ -199,9 +237,11 @@ public class PrayerTimesFragment extends Fragment {
                     mainHandler.post(() -> {
                         binding.progressBarPrayer.setVisibility(View.GONE);
                         if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                            displayPrayerTimes(response.body().getData());
+                            currentPrayerTimesData = response.body().getData(); // <<< PENTING: ISI DATA DI SINI
+                            displayPrayerTimes(currentPrayerTimesData);
                             binding.prayerTimesContainer.setVisibility(View.VISIBLE);
-                            schedulePrayerAlarms(response.body().getData());
+                            schedulePrayerAlarms(currentPrayerTimesData);
+                            updateDigitalClockAndCountdown(); // Panggil ini setelah data disimpan
                         } else {
                             showError("Gagal mengambil waktu sholat. " + response.message());
                             binding.btnRefreshPrayer.setVisibility(View.VISIBLE);
@@ -246,36 +286,155 @@ public class PrayerTimesFragment extends Fragment {
         binding.tvSunrise.setText(data.getTimings().getSunrise());
     }
 
+    private void updateDigitalClockAndCountdown() {
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
+
+        Calendar now = Calendar.getInstance(); // Waktu saat ini (zona waktu perangkat)
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        binding.tvDigitalClock.setText(timeFormat.format(now.getTime()));
+
+        // --- KOREKSI: Pastikan currentPrayerTimesData TIDAK NULL sebelum diakses ---
+        if (currentPrayerTimesData != null) { // <<< BARIS 371
+            String nextPrayerName = "Tidak Ada";
+            long millisUntilNextPrayer = Long.MAX_VALUE;
+            boolean foundNextPrayer = false;
+
+            SimpleDateFormat prayerTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            // KOREKSI: Gunakan TimeZone dari data API untuk parsing waktu sholat
+            TimeZone apiTimeZone = TimeZone.getTimeZone(currentPrayerTimesData.getMeta().getTimezone());
+            prayerTimeFormat.setTimeZone(apiTimeZone);
+
+            // KOREKSI: Parse tanggal API untuk mendapatkan tahun, bulan, hari di zona waktu API
+            String apiReadableDate = currentPrayerTimesData.getDate().getReadable();
+            // Sesuaikan format ini dengan format "readable" dari API (misal: "09 Jun 2025")
+            SimpleDateFormat apiDateFormatForParsing = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+            apiDateFormatForParsing.setTimeZone(apiTimeZone); // Penting: Set TimeZone untuk parsing
+
+            Date parsedApiDate;
+            Calendar apiDateCalendar = Calendar.getInstance(apiTimeZone); // DEKLARASIKAN DI SINI
+            try {
+                parsedApiDate = apiDateFormatForParsing.parse(apiReadableDate);
+                apiDateCalendar.setTime(parsedApiDate);
+            } catch (ParseException e) {
+                Log.e("PrayerTimesFragment", "Error parsing readable API date: " + apiReadableDate, e);
+                binding.tvCountdownToNextPrayer.setText("Error menghitung waktu sholat.");
+                return;
+            }
+
+
+            String[] prayerNames = {"Subuh", "Dzuhur", "Ashar", "Maghrib", "Isya"};
+            String[] prayerTimes = {
+                    currentPrayerTimesData.getTimings().getFajr(),
+                    currentPrayerTimesData.getTimings().getDhuhr(),
+                    currentPrayerTimesData.getTimings().getAsr(),
+                    currentPrayerTimesData.getTimings().getMaghrib(),
+                    currentPrayerTimesData.getTimings().getIsha()
+            };
+
+            for (int i = 0; i < prayerNames.length; i++) {
+                try {
+                    Date prayerTime = prayerTimeFormat.parse(prayerTimes[i]);
+                    Calendar prayerCalendar = Calendar.getInstance(apiTimeZone);
+                    prayerCalendar.setTime(prayerTime);
+
+                    prayerCalendar.set(Calendar.YEAR, apiDateCalendar.get(Calendar.YEAR));
+                    prayerCalendar.set(Calendar.MONTH, apiDateCalendar.get(Calendar.MONTH));
+                    prayerCalendar.set(Calendar.DAY_OF_MONTH, apiDateCalendar.get(Calendar.DAY_OF_MONTH));
+
+                    long timeInMillis = prayerCalendar.getTimeInMillis();
+
+                    if (timeInMillis > now.getTimeInMillis() + 1000) {
+                        if (timeInMillis - now.getTimeInMillis() < millisUntilNextPrayer) {
+                            millisUntilNextPrayer = timeInMillis - now.getTimeInMillis();
+                            nextPrayerName = prayerNames[i];
+                            foundNextPrayer = true;
+                        }
+                    }
+
+                } catch (ParseException e) {
+                    Log.e("PrayerTimesFragment", "Error parsing prayer time for countdown: " + prayerTimes[i], e);
+                }
+            }
+
+            if (!foundNextPrayer) {
+                try {
+                    Date fajrTomorrow = prayerTimeFormat.parse(currentPrayerTimesData.getTimings().getFajr());
+                    Calendar fajrCalendarTomorrow = Calendar.getInstance(apiTimeZone);
+                    fajrCalendarTomorrow.setTime(fajrTomorrow);
+
+                    fajrCalendarTomorrow.set(Calendar.YEAR, apiDateCalendar.get(Calendar.YEAR));
+                    fajrCalendarTomorrow.set(Calendar.MONTH, apiDateCalendar.get(Calendar.MONTH));
+                    fajrCalendarTomorrow.set(Calendar.DAY_OF_MONTH, apiDateCalendar.get(Calendar.DAY_OF_MONTH));
+                    fajrCalendarTomorrow.add(Calendar.DATE, 1);
+
+                    millisUntilNextPrayer = fajrCalendarTomorrow.getTimeInMillis() - now.getTimeInMillis();
+                    nextPrayerName = prayerNames[0];
+                } catch (ParseException e) {
+                    Log.e("PrayerTimesFragment", "Error parsing Fajr time for tomorrow's countdown.", e);
+                }
+            }
+
+
+            long totalSeconds = millisUntilNextPrayer / 1000;
+            long days = totalSeconds / (24 * 3600);
+            long hours = (totalSeconds % (24 * 3600)) / 3600;
+            long minutes = (totalSeconds % 3600) / 60;
+            long seconds = totalSeconds % 60;
+
+            String countdownText = "";
+            if (days > 0) {
+                countdownText += String.format(Locale.getDefault(), "%d hari ", days);
+            }
+            if (hours > 0 || days > 0) {
+                countdownText += String.format(Locale.getDefault(), "%02d jam ", hours);
+            }
+            countdownText += String.format(Locale.getDefault(), "%02d menit %02d detik lagi menuju waktu sholat %s", minutes, seconds, nextPrayerName);
+
+            binding.tvCountdownToNextPrayer.setText(countdownText);
+
+        } else {
+            binding.tvCountdownToNextPrayer.setText("Memuat waktu sholat...");
+        }
+    }
+
     @SuppressLint("ScheduleExactAlarm")
     private void schedulePrayerAlarms(PrayerTimesResponse.PrayerTimesData data) {
-        // --- TAMBAHAN PENTING UNTUK REQUEST IZIN ALARM TEAPAT WAKTU ---
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Hanya untuk Android 12 (API 31) dan di atasnya
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-            // Periksa apakah aplikasi sudah memiliki izin untuk menjadwalkan alarm tepat waktu
             if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
                 Log.w("PrayerTimesFragment", "Izin 'SCHEDULE_EXACT_ALARM' belum diberikan. Meminta pengguna untuk memberikan izin.");
-                // Tampilkan dialog untuk mengarahkan pengguna ke pengaturan izin aplikasi
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Izin Diperlukan: Alarm Adzan")
                         .setMessage("Aplikasi Tazkeeya memerlukan izin untuk menjadwalkan alarm tepat waktu agar notifikasi adzan berfungsi secara akurat. Silakan izinkan di pengaturan aplikasi.")
                         .setPositiveButton("Buka Pengaturan", (dialog, which) -> {
-                            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM); // Intent khusus untuk izin ini
-                            intent.setData(Uri.fromParts("package", requireContext().getPackageName(), null)); // Arahkan ke pengaturan aplikasi ini
+                            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                            intent.setData(Uri.fromParts("package", requireContext().getPackageName(), null));
                             startActivity(intent);
                         })
                         .setNegativeButton("Batal", (dialog, which) -> {
                             Toast.makeText(requireContext(), "Izin alarm tidak diberikan. Alarm adzan mungkin tidak akurat.", Toast.LENGTH_LONG).show();
                         })
-                        .setCancelable(false) // Pengguna harus memilih
+                        .setCancelable(false)
                         .show();
-                return; // Hentikan penjadwalan alarm jika izin belum diberikan
+                return;
             }
         }
-        // --- AKHIR TAMBAHAN PENTING ---
 
         Log.d("PrayerTimesFragment", "Mencoba menjadwalkan alarm sholat...");
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
-        String todayDateString = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+        // --- KOREKSI PENTING: Gunakan SimpleDateFormat yang benar untuk parsing ---
+        // Format yang cocok untuk string "10 Jun 2025 04:45" adalah "dd MMM yyyy HH:mm"
+        // Locale.US digunakan karena "Jun" adalah singkatan bulan dalam bahasa Inggris
+        SimpleDateFormat fullDateTimeParser = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.US);
+        TimeZone apiTimeZone = TimeZone.getTimeZone(data.getMeta().getTimezone());
+        fullDateTimeParser.setTimeZone(apiTimeZone); // Penting: Set TimeZone untuk parser ini
+        // --- AKHIR KOREKSI ---
+
+        String apiReadableDate = data.getDate().getReadable(); // Contoh: "09 Jun 2025"
+        // apiDateFormatForParsing yang sebelumnya digunakan untuk parsing date saja,
+        // sekarang kita pakai apiReadableDate langsung di dalam loop dengan fullDateTimeParser.
 
         String[] prayerNames = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
         String[] prayerTimes = {
@@ -291,22 +450,25 @@ public class PrayerTimesFragment extends Fragment {
             String time = prayerTimes[i];
 
             try {
-                Date prayerDateTime = dateTimeFormat.parse(todayDateString + " " + time);
+                // Gabungkan string tanggal yang dari API dengan waktu sholat, lalu parse
+                // KOREKSI: Gunakan apiReadableDate langsung
+                Date prayerDateTime = fullDateTimeParser.parse(apiReadableDate + " " + time);
                 if (prayerDateTime == null) {
-                    Log.e("PrayerTimesFragment", "Gagal parse waktu sholat untuk " + prayerName + ": " + time);
+                    Log.e("PrayerTimesFragment", "Gagal parse waktu sholat untuk " + prayerName + ": " + time + " (hasil null)");
                     continue;
                 }
 
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = Calendar.getInstance(apiTimeZone); // Penting: Gunakan TimeZone API untuk Calendar
                 calendar.setTime(prayerDateTime);
                 long triggerTime = calendar.getTimeInMillis();
 
-                if (triggerTime <= System.currentTimeMillis() + (5 * 60 * 1000)) {
+                // Logika penjadwalan ke hari berikutnya jika waktu sudah lewat
+                if (triggerTime <= System.currentTimeMillis() + (5 * 60 * 1000)) { // Toleransi 5 menit
                     calendar.add(Calendar.DATE, 1);
                     triggerTime = calendar.getTimeInMillis();
-                    Log.d("PrayerTimesFragment", "Waktu sholat " + prayerName + " (" + time + ") sudah lewat hari ini. Dijadwalkan untuk besok: " + dateTimeFormat.format(new Date(triggerTime)));
+                    Log.d("PrayerTimesFragment", "Waktu sholat " + prayerName + " (" + time + ") sudah lewat hari ini. Dijadwalkan untuk besok: " + fullDateTimeParser.format(new Date(triggerTime)));
                 } else {
-                    Log.d("PrayerTimesFragment", "Waktu sholat " + prayerName + " (" + time + ") dijadwalkan hari ini: " + dateTimeFormat.format(new Date(triggerTime)));
+                    Log.d("PrayerTimesFragment", "Waktu sholat " + prayerName + " (" + time + ") dijadwalkan hari ini: " + fullDateTimeParser.format(new Date(triggerTime)));
                 }
 
                 AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
@@ -327,11 +489,12 @@ public class PrayerTimesFragment extends Fragment {
                 } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
                 }
-                Log.d("PrayerTimesFragment", "Alarm " + prayerName + " berhasil dijadwalkan pada " + dateTimeFormat.format(new Date(triggerTime)));
+                Log.d("PrayerTimesFragment", "Alarm " + prayerName + " berhasil dijadwalkan pada " + fullDateTimeParser.format(new Date(triggerTime)));
 
             } catch (ParseException e) {
-                Log.e("PrayerTimesFragment", "Error parsing time for " + prayerName + ": " + time, e);
-                Toast.makeText(requireContext(), "Gagal menjadwalkan alarm " + prayerName + ": format waktu tidak valid.", Toast.LENGTH_SHORT).show();
+                // KOREKSI: Log pesan kesalahan parse yang lebih detail
+                Log.e("PrayerTimesFragment", "Error parsing time for " + prayerName + ": '" + apiReadableDate + " " + time + "' with format 'dd MMM yyyy HH:mm'", e);
+                Toast.makeText(requireContext(), "Gagal menjadwalkan alarm " + prayerName + ": format waktu tidak valid.", Toast.LENGTH_LONG).show();
             } catch (SecurityException e) {
                 Log.e("PrayerTimesFragment", "Izin tidak cukup untuk menjadwalkan alarm. Pastikan izin 'SCHEDULE_EXACT_ALARM' diberikan.", e);
                 Toast.makeText(requireContext(), "Gagal menjadwalkan alarm: Izin tidak diberikan.", Toast.LENGTH_LONG).show();
@@ -340,8 +503,8 @@ public class PrayerTimesFragment extends Fragment {
         Toast.makeText(requireContext(), "Alarm sholat telah dijadwalkan!", Toast.LENGTH_SHORT).show();
     }
 
-    private void showError(String message) { // <<< METODE showError() YANG HILANG
-        if (binding != null) { // Pastikan binding tidak null
+    private void showError(String message) {
+        if (binding != null) {
             binding.progressBarPrayer.setVisibility(View.GONE);
             binding.btnRefreshPrayer.setVisibility(View.VISIBLE);
             binding.tvLocation.setText("Gagal mendapatkan lokasi/data.");
@@ -352,7 +515,7 @@ public class PrayerTimesFragment extends Fragment {
             binding.tvIsha.setText("Isya: --:--");
             binding.tvSunrise.setText("Terbit Matahari: --:--");
         }
-        if (getContext() != null) { // Pastikan konteks tidak null
+        if (getContext() != null) {
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
         }
         Log.e("PrayerTimesFragment", "Error: " + message);
@@ -368,8 +531,6 @@ public class PrayerTimesFragment extends Fragment {
                 showError("Izin lokasi ditolak. Waktu sholat mungkin tidak akurat.");
             }
         }
-        // Izin notifikasi POST_NOTIFICATIONS ditangani di MainActivity
-        // Izin SCHEDULE_EXACT_ALARM ditangani dengan dialog ke Settings
     }
 
     @Override
