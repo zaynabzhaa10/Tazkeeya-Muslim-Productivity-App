@@ -32,6 +32,7 @@ import com.example.finalproject.databinding.FragmentPrayerTimesBinding;
 import com.example.finalproject.network.api.ApiService;
 import com.example.finalproject.network.client.RetrofitClient;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,6 +45,10 @@ import android.provider.Settings;
 import android.app.AlertDialog;
 import android.net.Uri;
 import java.util.TimeZone;
+import android.location.Geocoder;
+import android.location.Geocoder;
+import java.util.List;
+import android.location.Address;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,14 +90,12 @@ public class PrayerTimesFragment extends Fragment {
             }
         };
 
-        binding.btnRefreshPrayer.setOnClickListener(v -> requestLocationAndFetchPrayerTimes());
+        binding.btnRefreshPrayer.setOnClickListener(v -> checkLocationPermissionAndFetchPrayerTimes());
 
         clockHandler.post(clockRunnable);
         checkLocationPermissionAndFetchPrayerTimes();
     }
 
-    private void requestLocationAndFetchPrayerTimes() {
-    }
 
     @Override
     public void onResume() {
@@ -116,6 +119,15 @@ public class PrayerTimesFragment extends Fragment {
     }
 
     private void checkLocationPermissionAndFetchPrayerTimes() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            startLocationUpdatesAndFetchPrayerTimes();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdatesAndFetchPrayerTimes() {
         binding.progressBarPrayer.setVisibility(View.VISIBLE);
         binding.prayerTimesContainer.setVisibility(View.GONE);
         binding.btnRefreshPrayer.setVisibility(View.GONE);
@@ -161,7 +173,7 @@ public class PrayerTimesFragment extends Fragment {
 
         if (lastKnownLocation != null) {
             Log.d("PrayerTimesFragment", "Lokasi terakhir diketahui: " + lastKnownLocation.getLatitude() + ", " + lastKnownLocation.getLongitude());
-            binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia");
+            getAndDisplayLocationName(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); // **[M] Diubah: Panggil metode baru untuk mendapatkan nama lokasi**
             fetchPrayerTimes(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         } else {
             locationListener = new LocationListener() {
@@ -171,7 +183,7 @@ public class PrayerTimesFragment extends Fragment {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     Log.d("PrayerTimesFragment", "Lokasi ditemukan: " + latitude + ", " + longitude);
-                    binding.tvLocation.setText("\uD83D\uDCCD Makassar, Indonesia");
+                    getAndDisplayLocationName(latitude, longitude); // **[M] Diubah: Panggil metode baru untuk mendapatkan nama lokasi**
                     fetchPrayerTimes(latitude, longitude);
                 }
 
@@ -192,9 +204,9 @@ public class PrayerTimesFragment extends Fragment {
 
             try {
                 if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 60 * 5, 10, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener); // **[M] Diubah: Interval 10 detik**
                 } else if (isGpsEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 60 * 5, 10, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 10, 10, locationListener); // **[M] Diubah: Interval 10 detik**
                 }
 
                 mainHandler.postDelayed(() -> {
@@ -218,6 +230,56 @@ public class PrayerTimesFragment extends Fragment {
         }
     }
 
+    private void getAndDisplayLocationName(double latitude, double longitude) {
+        executorService.execute(() -> {
+            Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    String cityName = address.getLocality();
+                    String subAdminArea = address.getSubAdminArea();
+                    String countryName = address.getCountryName();
+
+                    String locationText;
+                    if (cityName != null && !cityName.isEmpty()) {
+                        locationText = cityName;
+                        if (subAdminArea != null && !subAdminArea.isEmpty() && !subAdminArea.equalsIgnoreCase(cityName)) {
+                            locationText += ", " + subAdminArea;
+                        }
+                    } else if (subAdminArea != null && !subAdminArea.isEmpty()) {
+                        locationText = subAdminArea;
+                    } else {
+                        locationText = "Lokasi tidak diketahui";
+                    }
+
+                    if (countryName != null && !countryName.isEmpty()) {
+                        locationText += ", " + countryName;
+                    }
+                    final String finalLocationText = "\uD83D\uDCCD " + locationText;
+
+                    mainHandler.post(() -> {
+                        binding.tvLocation.setText(finalLocationText);
+                    });
+                } else {
+                    mainHandler.post(() -> {
+                        binding.tvLocation.setText("\uD83D\uDCCD Lokasi tidak ditemukan.");
+                    });
+                }
+            } catch (IOException e) {
+                Log.e("PrayerTimesFragment", "Error getting location name: " + e.getMessage());
+                mainHandler.post(() -> {
+                    binding.tvLocation.setText("\uD83D\uDCCD Gagal mendapatkan nama lokasi (cek koneksi internet).");
+                });
+            } catch (IllegalArgumentException e) {
+                Log.e("PrayerTimesFragment", "Error getting location name (invalid latitude/longitude): " + e.getMessage());
+                mainHandler.post(() -> {
+                    binding.tvLocation.setText("\uD83D\uDCCD Koordinat lokasi tidak valid.");
+                });
+            }
+        });
+    }
+
     private void fetchPrayerTimes(double latitude, double longitude) {
         ApiService apiService = RetrofitClient.getAladhanClient().create(ApiService.class);
         Call<PrayerTimesResponse> call = apiService.getPrayerTimesByCity("Makassar", "Indonesia", 5);
@@ -229,11 +291,11 @@ public class PrayerTimesFragment extends Fragment {
                     mainHandler.post(() -> {
                         binding.progressBarPrayer.setVisibility(View.GONE);
                         if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                            currentPrayerTimesData = response.body().getData(); // <<< PENTING: ISI DATA DI SINI
+                            currentPrayerTimesData = response.body().getData();
                             displayPrayerTimes(currentPrayerTimesData);
                             binding.prayerTimesContainer.setVisibility(View.VISIBLE);
                             schedulePrayerAlarms(currentPrayerTimesData);
-                            updateDigitalClockAndCountdown(); // Panggil ini setelah data disimpan
+                            updateDigitalClockAndCountdown();
                         } else {
                             showError("Gagal mengambil waktu sholat. " + response.message());
                             binding.btnRefreshPrayer.setVisibility(View.VISIBLE);
@@ -503,7 +565,7 @@ public class PrayerTimesFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestLocationAndFetchPrayerTimes();
+                checkLocationPermissionAndFetchPrayerTimes();
             } else {
                 showError("Izin lokasi ditolak. Waktu sholat mungkin tidak akurat.");
             }
