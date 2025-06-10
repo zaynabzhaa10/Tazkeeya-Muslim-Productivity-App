@@ -173,7 +173,7 @@ public class PrayerTimesFragment extends Fragment {
 
         if (lastKnownLocation != null) {
             Log.d("PrayerTimesFragment", "Lokasi terakhir diketahui: " + lastKnownLocation.getLatitude() + ", " + lastKnownLocation.getLongitude());
-            getAndDisplayLocationName(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()); // **[M] Diubah: Panggil metode baru untuk mendapatkan nama lokasi**
+            getAndDisplayLocationName(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             fetchPrayerTimes(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         } else {
             locationListener = new LocationListener() {
@@ -183,7 +183,7 @@ public class PrayerTimesFragment extends Fragment {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     Log.d("PrayerTimesFragment", "Lokasi ditemukan: " + latitude + ", " + longitude);
-                    getAndDisplayLocationName(latitude, longitude); // **[M] Diubah: Panggil metode baru untuk mendapatkan nama lokasi**
+                    getAndDisplayLocationName(latitude, longitude);
                     fetchPrayerTimes(latitude, longitude);
                 }
 

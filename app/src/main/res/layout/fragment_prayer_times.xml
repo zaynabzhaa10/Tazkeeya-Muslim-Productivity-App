@@ -51,8 +51,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_calendar"/>
 
@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Jumat, 7 Juni 2025 \n10 Dzulhijjah 1446 H"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/teal_700"
                     android:fontFamily="sans-serif-medium"
@@ -96,7 +96,7 @@
                     android:id="@+id/tvDigitalClock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="48sp"
+                    android:textSize="35sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorSecondary"
                     android:text="--:--"
@@ -111,7 +111,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:text="(Memuat...)"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="24dp"/>
+                    android:layout_marginBottom="10dp"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
