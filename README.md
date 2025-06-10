@@ -65,7 +65,8 @@ Fitur ini membantu pengguna memantau progres tilawah harian mereka.
 #### c. Tampilan Form Tilawah Harian
 Pengguna dapat memasukkan jumlah ayat yang telah dibaca untuk melacak target harian.
 
-<img src="https://github.com/user-attachments/assets/25c2ead9-bf08-4a8b-b6e5-d6731bfdff23" alt="Tampilan Form Tilawah Harian" width="300">
+
+<img src="https://github.com/user-attachments/assets/660f9b68-0a2b-4d08-911d-38dca2f1f81c" alt="Tampilan Form Tilawah Harian" width="300">
 
 ---
 
@@ -79,7 +80,8 @@ Pengguna dapat mendengarkan lantunan ayat suci Al-Qur'an.
 ### 5. Tampilan Menu Pengaturan
 Pengguna dapat menyesuaikan tema aplikasi (gelap/terang) sesuai preferensi visual.
 
-<img src="https://github.com/user-attachments/assets/00793d5f-deaa-4f21-a294-e5ab735d755b" alt="Menu Pengaturan" width="300">
+
+<img src="https://github.com/user-attachments/assets/1cfa1f7e-7f14-4b65-9f06-fe7f2fd4e165" alt="Menu Pengaturan" width="300">
 
 ---
 
