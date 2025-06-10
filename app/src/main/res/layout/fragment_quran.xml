@@ -60,14 +60,14 @@
             android:clipToPadding="false"
             tools:listitem="@layout/item_surah" />
 
-        <ImageView
+        <Button
             android:id="@+id/btnRefreshQuran"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:text="Refresh Data Al-Qur'an"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh Data"
             android:layout_gravity="center_horizontal"
-            android:visibility="gone"
-            android:src="@drawable/ic_refresh" />
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

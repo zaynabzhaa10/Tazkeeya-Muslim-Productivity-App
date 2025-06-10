@@ -382,7 +382,7 @@
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-light"
                 android:layout_gravity="center"
-                android:text="Q.S Al-Baqarah(1): 45" />
+                android:text="Q.S Al-Baqarah(2): 45" />
 
             <View
                 android:layout_width="250dp"
@@ -392,23 +392,14 @@
                 android:layout_marginTop="10dp" />
         </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRefreshPrayer"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:text="Refresh Waktu Sholat"
-        android:layout_marginTop="32dp"
-        android:visibility="gone"
-        app:backgroundTint="@color/design_default_color_primary"
-        app:cornerRadius="8dp"
-        android:textColor="#FFFFFF"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp"
-        android:layout_gravity="center"
-        app:icon="@drawable/ic_refresh"
-        app:iconGravity="textStart"
-        app:iconPadding="8dp"
-        app:iconTint="@color/white" />
+        <Button
+            android:id="@+id/btnRefreshPrayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh Data"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </LinearLayout>
