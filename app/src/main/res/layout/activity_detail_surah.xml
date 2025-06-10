@@ -129,6 +129,16 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvNoAyahFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Kosong"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:textSize="18sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAyahs"

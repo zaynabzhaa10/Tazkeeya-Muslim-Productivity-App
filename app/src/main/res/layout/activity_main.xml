@@ -142,16 +142,6 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/tazkeeya"
-            android:alpha="0.2"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_margin="48dp"
-            android:contentDescription="Decorative element" />
-
     </RelativeLayout>
 
 </ScrollView>

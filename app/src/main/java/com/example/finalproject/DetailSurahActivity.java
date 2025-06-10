@@ -63,7 +63,7 @@ public class DetailSurahActivity extends AppCompatActivity implements AyahAdapte
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(""); // Kosongkan judul default Toolbar
+            getSupportActionBar().setTitle("");
         }
 
         ImageView icBack = binding.icBack;
@@ -210,6 +210,13 @@ public class DetailSurahActivity extends AppCompatActivity implements AyahAdapte
             }
         }
         ayahAdapter.setAyahList(filteredList);
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            binding.tvNoAyahFound.setVisibility(View.VISIBLE);
+            binding.rvAyahs.setVisibility(View.GONE);
+        } else {
+            binding.tvNoAyahFound.setVisibility(View.GONE);
+            binding.rvAyahs.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showError(String message) {

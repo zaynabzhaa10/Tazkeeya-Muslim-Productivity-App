@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +50,7 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
 
     private FragmentQuranBinding binding;
     private SurahAdapter surahAdapter;
-    private List<SurahResponse.Surah> originalSurahList; // Untuk menyimpan daftar surah asli
+    private List<SurahResponse.Surah> originalSurahList;
     private SharedPreferences quranPrefs;
     private ExecutorService executorService;
     private Handler mainHandler;
@@ -98,7 +99,7 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
         binding.searchViewSurah.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false; // Tidak melakukan apa-apa saat submit
+                return false;
             }
 
             @Override
@@ -107,7 +108,6 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
                 return true;
             }
         });
-        // --- AKHIR LISTENER ---
     }
 
     private void setupRecyclerView() {
@@ -213,9 +213,15 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
                 }
             }
         }
-        surahAdapter.setSurahList(filteredList); // Update RecyclerView dengan daftar yang difilter
+        surahAdapter.setSurahList(filteredList);
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            binding.tvNoSurahFound.setVisibility(View.VISIBLE);
+            binding.rvSurahs.setVisibility(View.GONE);
+        } else {
+            binding.tvNoSurahFound.setVisibility(View.GONE);
+            binding.rvSurahs.setVisibility(View.VISIBLE);
+        }
     }
-    // --- AKHIR METODE BARU ---
 
     private void showError(String message) {
         binding.progressBarQuran.setVisibility(View.GONE);

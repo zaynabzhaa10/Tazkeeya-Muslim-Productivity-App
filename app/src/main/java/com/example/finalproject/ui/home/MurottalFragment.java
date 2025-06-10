@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +33,8 @@ import com.example.finalproject.ui.adapter.SurahAdapter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,6 +46,7 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
     private FragmentMurottalBinding binding;
     private SurahAdapter surahAdapter;
+    private List<SurahResponse.Surah> originalSurahList;
     private ExecutorService executorService;
     private Handler mainHandler;
 
@@ -134,6 +139,19 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
         binding.btnPreviousMurottal.setOnClickListener(v -> playPreviousSurah());
         binding.btnNextMurottal.setOnClickListener(v -> playNextSurah());
+
+        binding.searchViewMurottalSurah.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterSurahs(newText);
+                return true;
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -159,18 +177,14 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
                         if (response.isSuccessful()) {
                             if (response.body() != null && response.body().getData() != null) {
                                 List<SurahResponse.Surah> surahs = response.body().getData();
+                                originalSurahList = new ArrayList<>(surahs);
                                 Log.d("MurottalFragment", "Jumlah surah diterima: " + surahs.size());
                                 for (SurahResponse.Surah surah : surahs) {
-                                    // --- KOREKSI PENTING DI SINI: TIDAK PERLU SET audioUrlAlafasy di dalam loop ini ---
-                                    // Karena kita akan mengambilnya langsung dari audioFull saat item diklik/diputar.
-                                    // Logging untuk debugging tetap bisa dipertahankan.
                                     Map<String, String> audioFullMap = surah.getAudioFull();
                                     if (audioFullMap != null) {
                                         Log.d("MurottalFragment", "Surah " + surah.getNomor() + " AudioFull Map: " + audioFullMap.toString());
-                                        String alafasyUrl = audioFullMap.get("05"); // Langsung coba ambil
+                                        String alafasyUrl = audioFullMap.get("05");
                                         if (alafasyUrl != null && !alafasyUrl.isEmpty()) {
-                                            // Jangan set surah.setAudioUrlAlafasy(alafasyUrl); lagi
-                                            // Cukup log saja jika URL ditemukan.
                                             Log.d("MurottalFragment", "Surah " + surah.getNomor() + " Alafasy URL DITEMUKAN (dari Map): " + alafasyUrl);
                                         } else {
                                             Log.w("MurottalFragment", "Audio Alafasy (key '05') adalah NULL atau KOSONG di audioFull untuk surah " + surah.getNomor());
@@ -178,9 +192,8 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
                                     } else {
                                         Log.w("MurottalFragment", "AudioFull map adalah NULL untuk surah " + surah.getNomor());
                                     }
-                                    // --- AKHIR KOREKSI ---
                                 }
-                                surahAdapter.setSurahList(surahs); // Set list ke adapter
+                                surahAdapter.setSurahList(surahs);
                                 binding.rvMurottalSurahs.setVisibility(View.VISIBLE);
                             } else {
                                 String errorDetail = "Response body is null or data is null.";
@@ -231,10 +244,9 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
     @Override
     public void onItemClick(SurahResponse.Surah surah) {
-        // --- KOREKSI PENTING DI SINI: LANGSUNG AMBIL DARI AUDIOFULL ---
         Map<String, String> audioFullMap = surah.getAudioFull();
         if (audioFullMap != null) {
-            String audioUrl = audioFullMap.get("05"); // Langsung ambil dari map yang diparsing Gson
+            String audioUrl = audioFullMap.get("05");
             if (audioUrl != null && !audioUrl.isEmpty()) {
                 Intent serviceIntent = new Intent(requireContext(), MurottalPlaybackService.class);
                 serviceIntent.setAction(MurottalPlaybackService.ACTION_PLAY);
@@ -252,7 +264,6 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
             Toast.makeText(requireContext(), "Audio murottal untuk surah ini tidak tersedia (Map kosong).", Toast.LENGTH_SHORT).show();
             Log.w("MurottalFragment", "AudioFull map adalah NULL untuk surah " + surah.getNomor());
         }
-        // --- AKHIR KOREKSI ---
     }
 
     private void playNextSurah() {
@@ -297,6 +308,32 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
             }
         }
         return "Surah Tidak Dikenal";
+    }
+
+    private void filterSurahs(String query) {
+        List<SurahResponse.Surah> filteredList = new ArrayList<>();
+        if (originalSurahList != null) {
+            if (query.isEmpty()) {
+                filteredList.addAll(originalSurahList);
+            } else {
+                String lowerCaseQuery = query.toLowerCase(Locale.getDefault());
+                for (SurahResponse.Surah surah : originalSurahList) {
+                    if (String.valueOf(surah.getNomor()).contains(lowerCaseQuery) ||
+                            surah.getNamaLatin().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery) ||
+                            surah.getNama().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery)) {
+                        filteredList.add(surah);
+                    }
+                }
+            }
+        }
+        surahAdapter.setSurahList(filteredList);
+        if (filteredList.isEmpty() && !query.isEmpty()) {
+            binding.tvNoMurottalSurahFound.setVisibility(View.VISIBLE);
+            binding.rvMurottalSurahs.setVisibility(View.GONE);
+        } else {
+            binding.tvNoMurottalSurahFound.setVisibility(View.GONE);
+            binding.rvMurottalSurahs.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

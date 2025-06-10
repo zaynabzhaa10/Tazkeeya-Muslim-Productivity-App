@@ -25,6 +25,15 @@
         android:background="?attr/colorPrimary"
         android:layout_marginBottom="16dp" />
 
+    <SearchView
+        android:id="@+id/searchViewMurottalSurah"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Cari Surah (nomor/nama)"
+        android:iconifiedByDefault="false"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/search_bg" />
+
     <ProgressBar
         android:id="@+id/progressBarMurottal"
         android:layout_width="wrap_content"
@@ -37,7 +46,20 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:listitem="@layout/item_surah"/> <LinearLayout
+        tools:listitem="@layout/item_surah"/>
+
+    <TextView
+        android:id="@+id/tvNoMurottalSurahFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Kosong"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+        android:textSize="18sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
