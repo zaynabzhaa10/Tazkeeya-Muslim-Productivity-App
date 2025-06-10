@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +52,7 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
     private Handler mainHandler;
 
     private int currentPlayingSurahNumber = -1;
+    private String currentPlayingAudioUrl = null;
 
     private BroadcastReceiver playbackReceiver = new BroadcastReceiver() {
         @Override
@@ -60,22 +62,19 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
                 if (MurottalPlaybackService.ACTION_PLAY.equals(action)) {
                     String audioUrl = intent.getStringExtra(MurottalPlaybackService.EXTRA_AUDIO_URL);
                     String surahName = getSurahNameFromUrl(audioUrl);
-                    binding.tvCurrentPlaying.setText("Memutar: " + surahName);
-                    binding.btnPlayPauseMurottal.setImageResource(R.drawable.ic_pause);
+                    binding.tvCurrentPlaying.setText("Q.S " + surahName);
+                    currentPlayingAudioUrl = audioUrl;
                 } else if (MurottalPlaybackService.ACTION_PAUSE.equals(action)) {
                     String currentText = binding.tvCurrentPlaying.getText().toString();
                     if (currentText.startsWith("Memutar: ")) {
                         binding.tvCurrentPlaying.setText("Dijeda: " + currentText.replace("Memutar: ", ""));
-                    } else if (currentText.startsWith("Dijeda: ")) {
-                        binding.tvCurrentPlaying.setText("Memutar: " + currentText.replace("Dijeda: ", ""));
                     } else {
                         binding.tvCurrentPlaying.setText("Murottal dijeda");
                     }
-                    binding.btnPlayPauseMurottal.setImageResource(R.drawable.ic_play_arrow);
                 } else if (MurottalPlaybackService.ACTION_STOP.equals(action)) {
                     binding.tvCurrentPlaying.setText("Tidak ada murottal yang diputar");
-                    binding.btnPlayPauseMurottal.setImageResource(R.drawable.ic_play_arrow);
                     currentPlayingSurahNumber = -1;
+                    currentPlayingAudioUrl = null;
                 } else if (MurottalPlaybackService.ACTION_COMPLETED.equals(action)) {
                     playNextSurah();
                 }
@@ -102,39 +101,28 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
         binding.btnRefreshMurottal.setOnClickListener(v -> fetchSurahsForMurottal());
 
-        binding.btnPlayPauseMurottal.setOnClickListener(v -> {
-            if (currentPlayingSurahNumber != -1) {
+        binding.btnPlayMurottal.setOnClickListener(v -> {
+            if (currentPlayingAudioUrl != null && !currentPlayingAudioUrl.isEmpty()) {
+                // Ada surah yang dijeda, lanjutkan pemutaran
                 Intent serviceIntent = new Intent(requireContext(), MurottalPlaybackService.class);
-                if (binding.btnPlayPauseMurottal.getDrawable().getConstantState().equals(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_pause).getConstantState())) {
-                    serviceIntent.setAction(MurottalPlaybackService.ACTION_PAUSE);
-                } else {
-                    if (currentPlayingSurahNumber > 0 && currentPlayingSurahNumber <= 114) {
-                        String audioUrlToPlay = null;
-                        if (surahAdapter != null && surahAdapter.getSurahList() != null) {
-                            for (SurahResponse.Surah s : surahAdapter.getSurahList()) {
-                                if (s.getNomor() == currentPlayingSurahNumber && s.getAudioFull() != null) {
-                                    audioUrlToPlay = s.getAudioFull().get("05");
-                                    break;
-                                }
-                            }
-                        }
-                        if (audioUrlToPlay != null && !audioUrlToPlay.isEmpty()) {
-                            serviceIntent.setAction(MurottalPlaybackService.ACTION_PLAY);
-                            serviceIntent.putExtra(MurottalPlaybackService.EXTRA_AUDIO_URL, audioUrlToPlay);
-                        } else {
-                            Toast.makeText(requireContext(), "Tidak ada audio untuk dilanjutkan. Pilih surah baru.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "Pilih surah untuk diputar", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
+                serviceIntent.setAction(MurottalPlaybackService.ACTION_PLAY);
+                serviceIntent.putExtra(MurottalPlaybackService.EXTRA_AUDIO_URL, currentPlayingAudioUrl);
                 ContextCompat.startForegroundService(requireContext(), serviceIntent);
             } else {
-                Toast.makeText(requireContext(), "Pilih surah untuk diputar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Pilih surah untuk diputar dari daftar.", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        binding.btnPauseMurottal.setOnClickListener(v -> {
+            Intent serviceIntent = new Intent(requireContext(), MurottalPlaybackService.class);
+            serviceIntent.setAction(MurottalPlaybackService.ACTION_PAUSE);
+            ContextCompat.startForegroundService(requireContext(), serviceIntent);
+        });
+
+        binding.btnStopMurottal.setOnClickListener(v -> {
+            Intent serviceIntent = new Intent(requireContext(), MurottalPlaybackService.class);
+            serviceIntent.setAction(MurottalPlaybackService.ACTION_STOP);
+            ContextCompat.startForegroundService(requireContext(), serviceIntent);
         });
 
         binding.btnPreviousMurottal.setOnClickListener(v -> playPreviousSurah());
@@ -255,7 +243,6 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
                 currentPlayingSurahNumber = surah.getNomor();
                 binding.tvCurrentPlaying.setText("Q.S " + surah.getNamaLatin());
-                binding.btnPlayPauseMurottal.setImageResource(R.drawable.ic_pause);
             } else {
                 Toast.makeText(requireContext(), "URL Audio Alafasy tidak ditemukan atau kosong untuk surah ini.", Toast.LENGTH_SHORT).show();
                 Log.w("MurottalFragment", "Audio URL Alafasy kosong (dari map) untuk surah " + surah.getNomor() + ". Map keys: " + audioFullMap.keySet());

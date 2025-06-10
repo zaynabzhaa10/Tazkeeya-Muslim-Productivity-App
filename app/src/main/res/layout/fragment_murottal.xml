@@ -72,17 +72,43 @@
         android:layout_height="48dp"
         android:src="@drawable/ic_previous"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sebelumnya"/>
+        android:contentDescription="Sebelumnya"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <ImageView
-        android:id="@+id/btnPlayPauseMurottal"
+        android:id="@+id/btnPauseMurottal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_pause"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Jeda"
+        android:layout_marginLeft="10dp"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <ImageView
+        android:id="@+id/btnPlayMurottal"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:src="@drawable/ic_play_arrow"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Putar/Jeda"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:contentDescription="Putar"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <ImageView
+        android:id="@+id/btnStopMurottal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_stop"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Hentikan"
+        android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <ImageView
         android:id="@+id/btnNextMurottal"
@@ -90,7 +116,9 @@
         android:layout_height="40dp"
         android:src="@drawable/ic_next"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Selanjutnya"/>
+        android:contentDescription="Selanjutnya"
+        android:clickable="true"
+        android:focusable="true"/>
 </LinearLayout>
 
     <TextView

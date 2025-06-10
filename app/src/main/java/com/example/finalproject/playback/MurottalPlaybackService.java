@@ -47,13 +47,13 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         if (intent != null) {
             String action = intent.getAction();
             if (action != null) {
-                String newAudioUrl = intent.getStringExtra(EXTRA_AUDIO_URL); // Ambil URL baru
+                String newAudioUrl = intent.getStringExtra(EXTRA_AUDIO_URL);
 
                 switch (action) {
                     case ACTION_PLAY:
-                        if (newAudioUrl != null && !newAudioUrl.equals(audioUrl)) { // Jika URL berbeda, putar baru
-                            stopAudio(); // Hentikan yang lama jika ada
-                            audioUrl = newAudioUrl; // Simpan URL yang baru
+                        if (newAudioUrl != null && !newAudioUrl.equals(audioUrl)) {
+                            stopAudio();
+                            audioUrl = newAudioUrl;
                             playAudio(audioUrl);
                             startForeground(NOTIFICATION_ID, createNotification("Memutar Murottal"));
                         } else if (mediaPlayer != null && !mediaPlayer.isPlaying()) { // Jika URL sama dan dijeda, lanjutkan

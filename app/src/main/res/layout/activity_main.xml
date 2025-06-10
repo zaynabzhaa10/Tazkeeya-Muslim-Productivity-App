@@ -96,7 +96,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Start Button with Gradient -->
             <Button
                 android:id="@+id/btnStart"
                 android:layout_width="match_parent"
@@ -107,7 +106,7 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:stateListAnimator="@null"
-                android:text="🚀 Ayo Mulai"
+                android:text="Ayo Mulai"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
