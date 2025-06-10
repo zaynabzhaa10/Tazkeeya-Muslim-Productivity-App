@@ -55,19 +55,17 @@ public class AyahAdapter extends RecyclerView.Adapter<AyahAdapter.AyahViewHolder
 
         holder.tvAyahNumber.setText("Ayat " + ayah.getNomor());
 
-        // Teks Arab
         if (ayah.getAr() != null && !ayah.getAr().isEmpty()) {
             holder.tvAyahText.setText(ayah.getAr());
             Log.d("AyahAdapter", "Ayat " + ayah.getNomor() + " (Arab): " + ayah.getAr().substring(0, Math.min(ayah.getAr().length(), 50)) + "...");
             holder.tvAyahText.setVisibility(View.VISIBLE);
         } else {
-            holder.tvAyahText.setText("Teks Arab tidak tersedia."); // Ganti dengan string kosong jika tidak ingin menampilkan pesan ini
+            holder.tvAyahText.setText("Teks Arab tidak tersedia.");
             Log.e("AyahAdapter", "Teks Arab kosong atau null untuk ayat " + ayah.getNomor());
-            // Toast.makeText(holder.itemView.getContext(), "Teks Arab ayat " + ayah.getNomor() + " kosong!", Toast.LENGTH_SHORT).show(); // Komentar/hapus jika tidak ingin toast
-            holder.tvAyahText.setVisibility(View.GONE); // Sembunyikan jika kosong
+            // Toast.makeText(holder.itemView.getContext(), "Teks Arab ayat " + ayah.getNomor() + " kosong!", Toast.LENGTH_SHORT).show();
+            holder.tvAyahText.setVisibility(View.GONE);
         }
 
-        // --- TAMBAHAN BARU DI onBindViewHolder ---
         // Cara Baca Latin
         if (ayah.getTr() != null && !ayah.getTr().isEmpty()) {
             holder.tvAyahLatin.setText(ayah.getTr());
@@ -83,9 +81,7 @@ public class AyahAdapter extends RecyclerView.Adapter<AyahAdapter.AyahViewHolder
         } else {
             holder.tvAyahTranslation.setVisibility(View.GONE);
         }
-        // --- AKHIR TAMBAHAN BARU ---
 
-        // Penanganan tombol play audio
         holder.btnPlayAyah.setOnClickListener(v -> {
             Map<String, String> audioMap = ayah.getAudio();
             if (listener != null && audioMap != null && audioMap.containsKey("05")) {
@@ -112,10 +108,8 @@ public class AyahAdapter extends RecyclerView.Adapter<AyahAdapter.AyahViewHolder
     static class AyahViewHolder extends RecyclerView.ViewHolder {
         TextView tvAyahNumber;
         TextView tvAyahText;
-        // --- TAMBAHAN BARU DI ViewHolder ---
         TextView tvAyahLatin;
         TextView tvAyahTranslation;
-        // --- AKHIR TAMBAHAN BARU ---
         ImageView btnPlayAyah;
 
         @SuppressLint("WrongViewCast")
@@ -123,10 +117,8 @@ public class AyahAdapter extends RecyclerView.Adapter<AyahAdapter.AyahViewHolder
             super(itemView);
             tvAyahNumber = itemView.findViewById(R.id.tvAyahNumber);
             tvAyahText = itemView.findViewById(R.id.tvAyahText);
-            // --- INISIALISASI VIEW BARU ---
             tvAyahLatin = itemView.findViewById(R.id.tvAyahLatin);
             tvAyahTranslation = itemView.findViewById(R.id.tvAyahTranslation);
-            // --- AKHIR INISIALISASI ---
             btnPlayAyah = itemView.findViewById(R.id.btnPlayAyah);
         }
     }

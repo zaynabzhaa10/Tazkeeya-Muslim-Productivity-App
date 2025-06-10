@@ -34,7 +34,6 @@ public class QuranReadViewModel extends AndroidViewModel {
         quranRepository.insert(log);
     }
 
-    // --- TAMBAHAN BARU UNTUK DELETE ---
     public void delete(QuranReadLog log) {
         quranRepository.delete(log);
     }
@@ -42,7 +41,6 @@ public class QuranReadViewModel extends AndroidViewModel {
     public void deleteAllLogs() {
         quranRepository.deleteAllLogs();
     }
-    // --- AKHIR TAMBAHAN ---
 
     @Override
     protected void onCleared() {

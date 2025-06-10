@@ -103,7 +103,6 @@ public class MurottalFragment extends Fragment implements SurahAdapter.OnItemCli
 
         binding.btnPlayMurottal.setOnClickListener(v -> {
             if (currentPlayingAudioUrl != null && !currentPlayingAudioUrl.isEmpty()) {
-                // Ada surah yang dijeda, lanjutkan pemutaran
                 Intent serviceIntent = new Intent(requireContext(), MurottalPlaybackService.class);
                 serviceIntent.setAction(MurottalPlaybackService.ACTION_PLAY);
                 serviceIntent.putExtra(MurottalPlaybackService.EXTRA_AUDIO_URL, currentPlayingAudioUrl);

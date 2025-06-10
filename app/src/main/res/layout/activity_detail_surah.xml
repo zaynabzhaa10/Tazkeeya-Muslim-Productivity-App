@@ -114,7 +114,7 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="110dp"
                 android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="@font/font_kemenag"
                 tools:text="الفاتحة" />
         </LinearLayout>
 

@@ -37,7 +37,6 @@ public class QuranRepository {
         executorService.execute(() -> quranDao.insert(log));
     }
 
-    // --- TAMBAHAN BARU UNTUK DELETE ---
     public void delete(QuranReadLog log) {
         executorService.execute(() -> quranDao.delete(log));
     }
@@ -45,7 +44,6 @@ public class QuranRepository {
     public void deleteAllLogs() {
         executorService.execute(() -> quranDao.deleteAllLogs());
     }
-    // --- AKHIR TAMBAHAN ---
 
     public void shutdownExecutor() {
         if (executorService != null && !executorService.isShutdown()) {

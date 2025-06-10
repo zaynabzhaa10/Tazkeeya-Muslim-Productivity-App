@@ -139,11 +139,8 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
                                     if (audioFullMap != null) {
                                         Log.d("QuranFragment", "Surah " + surah.getNomor() + " AudioFull Map: " + audioFullMap.toString());
 
-                                        String alafasyUrl = audioFullMap.get("05"); // Langsung coba ambil nilai dari Map
+                                        String alafasyUrl = audioFullMap.get("05");
                                         if (alafasyUrl != null && !alafasyUrl.isEmpty()) {
-                                            // --- KOREKSI PENTING DI SINI: TIDAK PERLU SET audioUrlAlafasy ---
-                                            // Karena properti audioUrlAlafasy sudah dihapus dari model Surah
-                                            // URL akan diambil langsung dari audioFull.get("05") di AyahAdapter atau MurottalFragment.
                                             Log.d("QuranFragment", "Surah " + surah.getNomor() + " Alafasy URL DITEMUKAN (untuk cek): " + alafasyUrl);
                                         } else {
                                             Log.w("QuranFragment", "Audio Alafasy (key '05') adalah NULL atau KOSONG di audioFull untuk surah " + surah.getNomor());
@@ -195,7 +192,6 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
         });
     }
 
-    // --- METODE BARU: FILTER SURAH ---
     private void filterSurahs(String query) {
         List<SurahResponse.Surah> filteredList = new ArrayList<>();
         if (originalSurahList != null) {
@@ -204,7 +200,6 @@ public class QuranFragment extends Fragment implements SurahAdapter.OnItemClickL
             } else {
                 String lowerCaseQuery = query.toLowerCase(Locale.getDefault());
                 for (SurahResponse.Surah surah : originalSurahList) {
-                    // Filter berdasarkan nomor surah atau nama surah (Latin/Arab)
                     if (String.valueOf(surah.getNomor()).contains(lowerCaseQuery) ||
                             surah.getNamaLatin().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery) ||
                             surah.getNama().toLowerCase(Locale.getDefault()).contains(lowerCaseQuery)) {

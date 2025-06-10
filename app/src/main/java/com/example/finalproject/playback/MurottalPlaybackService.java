@@ -56,16 +56,16 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
                             audioUrl = newAudioUrl;
                             playAudio(audioUrl);
                             startForeground(NOTIFICATION_ID, createNotification("Memutar Murottal"));
-                        } else if (mediaPlayer != null && !mediaPlayer.isPlaying()) { // Jika URL sama dan dijeda, lanjutkan
+                        } else if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+
                             mediaPlayer.start();
                             Toast.makeText(this, "Murottal dilanjutkan", Toast.LENGTH_SHORT).show();
                             startForeground(NOTIFICATION_ID, createNotification("Memutar Murottal"));
-                        } else if (mediaPlayer == null && newAudioUrl != null) { // Jika belum ada player, putar baru
+                        } else if (mediaPlayer == null && newAudioUrl != null) {
                             audioUrl = newAudioUrl;
                             playAudio(audioUrl);
                             startForeground(NOTIFICATION_ID, createNotification("Memutar Murottal"));
                         } else if (mediaPlayer != null && mediaPlayer.isPlaying()){
-                            // Sudah memutar, tidak perlu aksi
                         }
                         break;
                     case ACTION_PAUSE:
@@ -91,7 +91,7 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
             mediaPlayer.setOnErrorListener(this);
             mediaPlayer.setOnCompletionListener(this);
         } else {
-            mediaPlayer.reset(); // Reset untuk memutar URL baru
+            mediaPlayer.reset();
         }
         try {
             mediaPlayer.setDataSource(url);
@@ -101,7 +101,6 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
             Log.e("MurottalService", "Error setting data source", e);
             Toast.makeText(this, "Gagal memuat audio: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             stopAudio();
-            // Kirim broadcast jika terjadi kesalahan
             sendBroadcast(new Intent(ACTION_STOP));
         }
     }
@@ -110,7 +109,6 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             Toast.makeText(this, "Murottal dijeda", Toast.LENGTH_SHORT).show();
-            // Kirim broadcast status pause
             sendBroadcast(new Intent(ACTION_PAUSE));
         }
     }
@@ -120,9 +118,8 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
-            audioUrl = null; // Reset URL saat dihentikan
+            audioUrl = null;
             Toast.makeText(this, "Murottal dihentikan", Toast.LENGTH_SHORT).show();
-            // Kirim broadcast status stop
             sendBroadcast(new Intent(ACTION_STOP));
         }
     }
@@ -132,9 +129,8 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         mp.start();
         Toast.makeText(this, "Murottal diputar", Toast.LENGTH_SHORT).show();
         updateNotification("Memutar Murottal");
-        // Kirim broadcast status play
         Intent intent = new Intent(ACTION_PLAY);
-        intent.putExtra(EXTRA_AUDIO_URL, audioUrl); // Kirim URL yang sedang diputar
+        intent.putExtra(EXTRA_AUDIO_URL, audioUrl);
         sendBroadcast(intent);
     }
 
@@ -143,7 +139,6 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         Log.e("MurottalService", "MediaPlayer error: " + what + ", " + extra);
         Toast.makeText(this, "Kesalahan saat memutar audio.", Toast.LENGTH_SHORT).show();
         stopAudio();
-        // Kirim broadcast jika terjadi kesalahan fatal
         sendBroadcast(new Intent(ACTION_STOP));
         return false;
     }
@@ -151,9 +146,8 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d("MurottalService", "Playback completed");
-        stopAudio(); // Otomatis menghentikan service
-        // Kirim broadcast bahwa pemutaran telah selesai
-        sendBroadcast(new Intent(ACTION_COMPLETED)); // <-- Tambahan ini
+        stopAudio();
+        sendBroadcast(new Intent(ACTION_COMPLETED));
         stopForeground(true);
         stopSelf();
     }
@@ -170,8 +164,6 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         Log.d("MurottalService", "Service onDestroy");
         stopAudio();
     }
-
-    // --- Notifikasi Foreground Service ---
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -192,13 +184,12 @@ public class MurottalPlaybackService extends Service implements MediaPlayer.OnPr
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        // Intent untuk tombol pause/play di notifikasi
         Intent playPauseIntent = new Intent(this, MurottalPlaybackService.class);
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             playPauseIntent.setAction(ACTION_PAUSE);
         } else {
             playPauseIntent.setAction(ACTION_PLAY);
-            playPauseIntent.putExtra(EXTRA_AUDIO_URL, audioUrl); // Kirim URL saat play
+            playPauseIntent.putExtra(EXTRA_AUDIO_URL, audioUrl);
         }
         PendingIntent playPausePendingIntent = PendingIntent.getService(this, 0, playPauseIntent, PendingIntent.FLAG_IMMUTABLE);
 

@@ -16,7 +16,6 @@ import java.util.List;
 
 public class SurahAdapter extends RecyclerView.Adapter<SurahAdapter.SurahViewHolder> {
 
-    // Mengubah akses ke list internal dari public ke private
     private List<SurahResponse.Surah> surahList;
     private OnItemClickListener listener;
 
@@ -44,10 +43,9 @@ public class SurahAdapter extends RecyclerView.Adapter<SurahAdapter.SurahViewHol
     @Override
     public void onBindViewHolder(@NonNull SurahViewHolder holder, int position) {
         SurahResponse.Surah surah = surahList.get(position);
-        // SESUAIKAN PANGGILAN GETTER DENGAN NAMA ATRIBUT BARU
         holder.tvSurahNumber.setText(String.valueOf(surah.getNomor()) + ".");
-        holder.tvSurahName.setText(surah.getNamaLatin() + " (" + surah.getArti() + ")"); // Nama Latin + Arti
-        holder.tvAyahsCount.setText(surah.getJumlahAyat() + " Ayat, " + surah.getTempatTurun()); // JumlahAyat + TempatTurun
+        holder.tvSurahName.setText(surah.getNamaLatin() + " (" + surah.getArti() + ")");
+        holder.tvAyahsCount.setText(surah.getJumlahAyat() + " Ayat, " + surah.getTempatTurun());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -60,8 +58,6 @@ public class SurahAdapter extends RecyclerView.Adapter<SurahAdapter.SurahViewHol
     public int getItemCount() {
         return surahList.size();
     }
-
-    // Perlu tambahkan getter untuk surahList agar bisa diakses di MurottalFragment
     public List<SurahResponse.Surah> getSurahList() {
         return surahList;
     }

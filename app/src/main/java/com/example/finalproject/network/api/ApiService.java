@@ -21,7 +21,7 @@ public interface ApiService {
 
     @GET("timings/{timestamp}")
     Call<PrayerTimesResponse> getPrayerTimesByCoordinates(
-            @Path("timestamp") long timestamp, // Unix timestamp
+            @Path("timestamp") long timestamp,
             @Query("latitude") double latitude,
             @Query("longitude") double longitude,
             @Query("method") int method

@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
-import com.example.finalproject.R; // Pastikan import R benar
-import com.example.finalproject.databinding.FragmentSettingsBinding; // Sesuaikan
+import com.example.finalproject.R;
+import com.example.finalproject.databinding.FragmentSettingsBinding;
 
 public class SettingsFragment extends Fragment {
 
@@ -32,7 +32,8 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         SharedPreferences sharedPrefs = requireActivity().getSharedPreferences("TazkeeyaPrefs", Context.MODE_PRIVATE);
-        int currentTheme = sharedPrefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+        int currentTheme = sharedPrefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO);
 
         switch (currentTheme) {
             case AppCompatDelegate.MODE_NIGHT_NO:
@@ -57,7 +58,7 @@ public class SettingsFragment extends Fragment {
                 } else if (checkedId == R.id.radioSystem) {
                     themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
                 } else {
-                    themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM; // Default
+                    themeMode = AppCompatDelegate.MODE_NIGHT_NO;
                 }
 
                 sharedPrefs.edit().putInt("theme_mode", themeMode).apply();

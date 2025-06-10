@@ -13,10 +13,8 @@ public class RetrofitClient {
     private static final String ALADHAN_BASE_URL = "https://api.aladhan.com/v1/";
     private static final String EQURAN_BASE_URL = "https://equran.id/api/v2/";
 
-    // Buat OkHttpClient dengan logging interceptor
     private static OkHttpClient createOkHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        // Atur level logging ke BODY untuk melihat request dan response body
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         return new OkHttpClient.Builder()
                 .addInterceptor(logging)

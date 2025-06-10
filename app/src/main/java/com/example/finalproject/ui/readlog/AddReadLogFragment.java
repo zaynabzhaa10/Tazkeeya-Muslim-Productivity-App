@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.finalproject.data.entity.QuranReadLog;
-import com.example.finalproject.databinding.FragmentAddReadLogBinding; // Akan dibuat
+import com.example.finalproject.databinding.FragmentAddReadLogBinding;
 import com.example.finalproject.ui.quran.QuranReadViewModel;
 
 import java.text.SimpleDateFormat;
@@ -39,13 +39,10 @@ public class AddReadLogFragment extends Fragment {
 
         quranReadViewModel = new ViewModelProvider(requireActivity()).get(QuranReadViewModel.class);
 
-        // Contoh daftar surah untuk Spinner (bisa diganti dengan data API jika mau)
         String[] surahNames = new String[114];
         for (int i = 0; i < 114; i++) {
-            surahNames[i] = "Surah " + (i + 1); // Placeholder
+            surahNames[i] = "Surah " + (i + 1);
         }
-        // Jika sudah punya daftar surah dari API, bisa pakai itu.
-        // Adapter spinner dengan daftar surah
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, surahNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -57,7 +54,7 @@ public class AddReadLogFragment extends Fragment {
 
     private void saveReadLog() {
         String surahName = binding.spinnerSurah.getSelectedItem().toString();
-        int surahNumber = binding.spinnerSurah.getSelectedItemPosition() + 1; // Nomor surah
+        int surahNumber = binding.spinnerSurah.getSelectedItemPosition() + 1;
 
         String startAyatStr = binding.etStartAyah.getText().toString();
         String endAyatStr = binding.etEndAyah.getText().toString();
@@ -83,11 +80,9 @@ public class AddReadLogFragment extends Fragment {
 
         Toast.makeText(requireContext(), "Catatan bacaan tersimpan! Jumlah ayat: " + ayahsCount, Toast.LENGTH_SHORT).show();
 
-        // Kembali ke fragment sebelumnya (QuranFragment)
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
         } else {
-            // Atau jika tidak ada back stack, ini adalah kasus jarang
             Toast.makeText(requireContext(), "Catatan tersimpan.", Toast.LENGTH_SHORT).show();
         }
     }

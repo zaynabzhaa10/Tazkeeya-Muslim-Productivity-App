@@ -10,7 +10,7 @@ public class QuranReadLog {
     public int id;
 
     @ColumnInfo(name = "read_date")
-    public String readDate; // Format: YYYY-MM-DD
+    public String readDate;
     @ColumnInfo(name = "surah_number")
     public int surahNumber;
     @ColumnInfo(name = "surah_name")
@@ -34,19 +34,54 @@ public class QuranReadLog {
 
     // Getters
     public int getId() { return id; }
-    public String getReadDate() { return readDate; }
-    public int getSurahNumber() { return surahNumber; }
-    public String getSurahName() { return surahName; }
-    public int getStartAyah() { return startAyah; }
-    public int getEndAyah() { return endAyah; }
-    public int getAyahsCount() { return ayahsCount; }
+    public String getReadDate() {
+        return readDate;
+    }
 
-    // Setters (opsional, tergantung kebutuhan)
-    public void setId(int id) { this.id = id; }
-    public void setReadDate(String readDate) { this.readDate = readDate; }
-    public void setSurahNumber(int surahNumber) { this.surahNumber = surahNumber; }
-    public void setSurahName(String surahName) { this.surahName = surahName; }
-    public void setStartAyah(int startAyah) { this.startAyah = startAyah; }
-    public void setEndAyah(int endAyah) { this.endAyah = endAyah; }
-    public void setAyahsCount(int ayahsCount) { this.ayahsCount = ayahsCount; }
+    public int getSurahNumber() {
+        return surahNumber;
+    }
+
+    public String getSurahName() {
+        return surahName;
+    }
+
+    public int getStartAyah() {
+        return startAyah;
+    }
+
+    public int getEndAyah() {
+        return endAyah;
+    }
+    public int getAyahsCount() {
+        return ayahsCount;
+    }
+
+    // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void setReadDate(String readDate) {
+        this.readDate = readDate;
+    }
+
+    public void setSurahNumber(int surahNumber) {
+        this.surahNumber = surahNumber;
+    }
+
+    public void setSurahName(String surahName) {
+        this.surahName = surahName;
+    }
+
+    public void setStartAyah(int startAyah) {
+        this.startAyah = startAyah;
+    }
+
+    public void setEndAyah(int endAyah) {
+        this.endAyah = endAyah;
+    }
+
+    public void setAyahsCount(int ayahsCount) {
+        this.ayahsCount = ayahsCount;
+    }
 }

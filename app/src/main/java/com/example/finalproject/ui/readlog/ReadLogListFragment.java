@@ -238,7 +238,7 @@ public class ReadLogListFragment extends Fragment {
                 tvLogDate = itemView.findViewById(R.id.tvLogDate);
                 tvLogDetails = itemView.findViewById(R.id.tvLogDetails);
                 tvLogAyatCount = itemView.findViewById(R.id.tvLogAyatCount);
-                btnDeleteLogItem = itemView.findViewById(R.id.btnDeleteLogItem); // Inisialisasi ImageButton
+                btnDeleteLogItem = itemView.findViewById(R.id.btnDeleteLogItem);
             }
         }
     }

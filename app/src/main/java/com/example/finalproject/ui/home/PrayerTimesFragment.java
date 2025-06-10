@@ -60,9 +60,7 @@ public class PrayerTimesFragment extends Fragment {
 
     private Handler clockHandler;
     private Runnable clockRunnable;
-    // --- PASTIKAN DEKLARASI INI ADA PERSIS DI SINI SEBAGAI ANGGOTA KELAS ---
     private PrayerTimesResponse.PrayerTimesData currentPrayerTimesData;
-    // --- AKHIR PASTIKAN ---
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -83,13 +81,13 @@ public class PrayerTimesFragment extends Fragment {
             @Override
             public void run() {
                 updateDigitalClockAndCountdown();
-                clockHandler.postDelayed(this, 1000); // Update setiap 1 detik
+                clockHandler.postDelayed(this, 1000);
             }
         };
 
         binding.btnRefreshPrayer.setOnClickListener(v -> requestLocationAndFetchPrayerTimes());
 
-        clockHandler.post(clockRunnable); // Mulai update jam saat fragment dibuat.
+        clockHandler.post(clockRunnable);
         checkLocationPermissionAndFetchPrayerTimes();
     }
 
@@ -102,13 +100,9 @@ public class PrayerTimesFragment extends Fragment {
         if (clockHandler != null && clockRunnable != null) {
             clockHandler.post(clockRunnable);
         }
-        // KOREKSI: Panggil updateDigitalClockAndCountdown untuk memastikan tampilan terbaru
-        // terutama setelah kembali dari Activity lain (misal Settings)
         if (currentPrayerTimesData != null) {
             updateDigitalClockAndCountdown();
         } else {
-            // Jika currentPrayerTimesData null, coba fetch ulang data sholat
-            // agar updateDigitalClockAndCountdown memiliki data saat resume
             checkLocationPermissionAndFetchPrayerTimes();
         }
     }
@@ -226,8 +220,6 @@ public class PrayerTimesFragment extends Fragment {
 
     private void fetchPrayerTimes(double latitude, double longitude) {
         ApiService apiService = RetrofitClient.getAladhanClient().create(ApiService.class);
-        // KOREKSI: Menggunakan endpoint 'timingsByCity' dengan city/country, bukan timestamp
-        // Ini lebih sederhana untuk demo lokasi tetap
         Call<PrayerTimesResponse> call = apiService.getPrayerTimesByCity("Makassar", "Indonesia", 5);
 
         executorService.execute(() -> {
@@ -262,7 +254,6 @@ public class PrayerTimesFragment extends Fragment {
     }
 
     private void displayPrayerTimes(PrayerTimesResponse.PrayerTimesData data) {
-        // Tampilkan tanggal Gregorian dan Hijriah
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
         String readableDate = data.getDate().getReadable();
         String fullHijriDate = data.getDate().getHijri().getDate();
@@ -291,29 +282,25 @@ public class PrayerTimesFragment extends Fragment {
             return;
         }
 
-        Calendar now = Calendar.getInstance(); // Waktu saat ini (zona waktu perangkat)
+        Calendar now = Calendar.getInstance();
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         binding.tvDigitalClock.setText(timeFormat.format(now.getTime()));
 
-        // --- KOREKSI: Pastikan currentPrayerTimesData TIDAK NULL sebelum diakses ---
-        if (currentPrayerTimesData != null) { // <<< BARIS 371
+        if (currentPrayerTimesData != null) {
             String nextPrayerName = "Tidak Ada";
             long millisUntilNextPrayer = Long.MAX_VALUE;
             boolean foundNextPrayer = false;
 
             SimpleDateFormat prayerTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            // KOREKSI: Gunakan TimeZone dari data API untuk parsing waktu sholat
             TimeZone apiTimeZone = TimeZone.getTimeZone(currentPrayerTimesData.getMeta().getTimezone());
             prayerTimeFormat.setTimeZone(apiTimeZone);
 
-            // KOREKSI: Parse tanggal API untuk mendapatkan tahun, bulan, hari di zona waktu API
             String apiReadableDate = currentPrayerTimesData.getDate().getReadable();
-            // Sesuaikan format ini dengan format "readable" dari API (misal: "09 Jun 2025")
             SimpleDateFormat apiDateFormatForParsing = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-            apiDateFormatForParsing.setTimeZone(apiTimeZone); // Penting: Set TimeZone untuk parsing
+            apiDateFormatForParsing.setTimeZone(apiTimeZone);
 
             Date parsedApiDate;
-            Calendar apiDateCalendar = Calendar.getInstance(apiTimeZone); // DEKLARASIKAN DI SINI
+            Calendar apiDateCalendar = Calendar.getInstance(apiTimeZone);
             try {
                 parsedApiDate = apiDateFormatForParsing.parse(apiReadableDate);
                 apiDateCalendar.setTime(parsedApiDate);
@@ -424,17 +411,11 @@ public class PrayerTimesFragment extends Fragment {
 
         Log.d("PrayerTimesFragment", "Mencoba menjadwalkan alarm sholat...");
 
-        // --- KOREKSI PENTING: Gunakan SimpleDateFormat yang benar untuk parsing ---
-        // Format yang cocok untuk string "10 Jun 2025 04:45" adalah "dd MMM yyyy HH:mm"
-        // Locale.US digunakan karena "Jun" adalah singkatan bulan dalam bahasa Inggris
         SimpleDateFormat fullDateTimeParser = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.US);
         TimeZone apiTimeZone = TimeZone.getTimeZone(data.getMeta().getTimezone());
         fullDateTimeParser.setTimeZone(apiTimeZone); // Penting: Set TimeZone untuk parser ini
-        // --- AKHIR KOREKSI ---
 
-        String apiReadableDate = data.getDate().getReadable(); // Contoh: "09 Jun 2025"
-        // apiDateFormatForParsing yang sebelumnya digunakan untuk parsing date saja,
-        // sekarang kita pakai apiReadableDate langsung di dalam loop dengan fullDateTimeParser.
+        String apiReadableDate = data.getDate().getReadable();
 
         String[] prayerNames = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
         String[] prayerTimes = {
@@ -450,20 +431,17 @@ public class PrayerTimesFragment extends Fragment {
             String time = prayerTimes[i];
 
             try {
-                // Gabungkan string tanggal yang dari API dengan waktu sholat, lalu parse
-                // KOREKSI: Gunakan apiReadableDate langsung
                 Date prayerDateTime = fullDateTimeParser.parse(apiReadableDate + " " + time);
                 if (prayerDateTime == null) {
                     Log.e("PrayerTimesFragment", "Gagal parse waktu sholat untuk " + prayerName + ": " + time + " (hasil null)");
                     continue;
                 }
 
-                Calendar calendar = Calendar.getInstance(apiTimeZone); // Penting: Gunakan TimeZone API untuk Calendar
+                Calendar calendar = Calendar.getInstance(apiTimeZone);
                 calendar.setTime(prayerDateTime);
                 long triggerTime = calendar.getTimeInMillis();
 
-                // Logika penjadwalan ke hari berikutnya jika waktu sudah lewat
-                if (triggerTime <= System.currentTimeMillis() + (5 * 60 * 1000)) { // Toleransi 5 menit
+                if (triggerTime <= System.currentTimeMillis() + (5 * 60 * 1000)) {
                     calendar.add(Calendar.DATE, 1);
                     triggerTime = calendar.getTimeInMillis();
                     Log.d("PrayerTimesFragment", "Waktu sholat " + prayerName + " (" + time + ") sudah lewat hari ini. Dijadwalkan untuk besok: " + fullDateTimeParser.format(new Date(triggerTime)));
@@ -492,7 +470,6 @@ public class PrayerTimesFragment extends Fragment {
                 Log.d("PrayerTimesFragment", "Alarm " + prayerName + " berhasil dijadwalkan pada " + fullDateTimeParser.format(new Date(triggerTime)));
 
             } catch (ParseException e) {
-                // KOREKSI: Log pesan kesalahan parse yang lebih detail
                 Log.e("PrayerTimesFragment", "Error parsing time for " + prayerName + ": '" + apiReadableDate + " " + time + "' with format 'dd MMM yyyy HH:mm'", e);
                 Toast.makeText(requireContext(), "Gagal menjadwalkan alarm " + prayerName + ": format waktu tidak valid.", Toast.LENGTH_LONG).show();
             } catch (SecurityException e) {

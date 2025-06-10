@@ -52,7 +52,7 @@ public class DetailSurahActivity extends AppCompatActivity implements AyahAdapte
     private ExecutorService executorService;
     private Handler mainHandler;
 
-    private boolean isDescriptionExpanded = false; // Status untuk melacak deskripsi diperluas atau tidak
+    private boolean isDescriptionExpanded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class DetailSurahActivity extends AppCompatActivity implements AyahAdapte
             return;
         }
 
-        tvToolbarTitle.setText(surahNameLatin); // Set judul di TextView kustom
+        tvToolbarTitle.setText(surahNameLatin);
 
         icBack.setOnClickListener(v -> onBackPressed());
 
@@ -135,7 +135,7 @@ public class DetailSurahActivity extends AppCompatActivity implements AyahAdapte
                                 surahMeaning = surahDetail.getArti();
                                 surahRevelationType = surahDetail.getTempatTurun();
                                 numberOfAyahs = surahDetail.getJumlahAyat();
-                                surahDescription = surahDetail.getDeskripsi(); // Simpan deskripsi lengkap
+                                surahDescription = surahDetail.getDeskripsi();
 
                                 // Set TextViews
                                 binding.tvDetailSurahNameLatin.setText(surahNameLatin);

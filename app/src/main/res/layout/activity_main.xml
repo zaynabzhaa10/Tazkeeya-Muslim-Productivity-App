@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Background Image -->
         <ImageView
             android:id="@+id/ivBackground"
             android:layout_width="match_parent"
@@ -54,7 +53,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Welcome Message Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,7 +109,6 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <!-- Decorative Elements -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
